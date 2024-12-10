@@ -1,0 +1,28 @@
+server:
+  port: ${CONFIG_SERVER_PORT}
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations:
+            - classpath:config/core/{application}
+            - classpath:config/core/{application}-{profile}
+            - classpath:config/stats/{application}
+            - classpath:config/stats/{application}-{profile}
+            - classpath:config/infra/{application}
+
+eureka:
+  instance:
+    hostname: ${CONFIG_SERVER_HOST}
+    preferIpAddress: true
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}-${random.value}}
+    leaseRenewalIntervalInSeconds: 30
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/

@@ -1,0 +1,27 @@
+spring:
+  profiles.active: ${APP_PROFILE:default}
+  application:
+    name: main-service
+  config:
+    import: "configserver:"
+    fail-fast: true
+    retry:
+      useRandomPolicy: true
+      max-interval: 6000
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
+  instance:
+    hostname: ${MAIN_SERVER_HOST}
+    preferIpAddress: true
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${MAIN_SERVER_PORT}-${random.value}}
+    leaseRenewalIntervalInSeconds: 30
+

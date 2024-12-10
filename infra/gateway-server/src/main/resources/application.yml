@@ -1,0 +1,37 @@
+spring:
+  profiles.active: ${APP_PROFILE:default}
+  application:
+    #    имя/идентификатор сервиса
+    name: gateway-server
+  config:
+    import: "configserver:"
+    fail-fast: true
+    #    retry - ожидание и повторный запрос соединения
+    retry:
+      useRandomPolicy: true
+      max-interval: 6000
+  cloud:
+    config:
+      # не загружать другие компоненты до получения конфигурации
+      fail-fast: true
+      #    fail-fast - чтобы сервер падал, если не доступен сервер конфиг
+      # если config-server недоступен, нужно сделать несколько попыток подключиться
+      retry:
+        # используем случайный backoff между попытками
+        useRandomPolicy: true
+        # максимальный интервал, в течение которого делаем попытки (6000 миллисекунд = 6 сек) max-interval: 6000
+        max-interval: 60000
+      discovery:
+        enabled: true
+        serviceId: config-server
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
+  instance:
+    hostname: ${GATEWAY_SERVER_HOST}
+    preferIpAddress: true
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}-${random.value}}
+    leaseRenewalIntervalInSeconds: 30
