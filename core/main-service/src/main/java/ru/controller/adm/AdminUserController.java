@@ -36,8 +36,8 @@ public class AdminUserController {
             description = "Возвращает информацию обо всех пользователях (учитываются параметры ограничения выборки)")
     public List<UserDto> getUsers(
             @RequestParam(required = false) List<Long> ids,
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получение пользователей ids = {}, from = {}, size = {}", ids, from, size);
         return service.getUsers(ids, from, size);
     }

@@ -10,7 +10,7 @@ import java.util.Set;
 @Data
 public class EventRequestStatusUpdateRequest {
     @NotEmpty
-    Set<Long> requestIds;
+    private Set<Long> requestIds;
     @NotNull
-    RequestStatus status;
+    private RequestStatus status;
 }

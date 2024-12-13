@@ -35,11 +35,7 @@ public class WebClientConfig {
     }
 
     private URI makeUri(String nameService) {
-//        System.out.println();
-//        System.out.println();
-//        System.out.println();
-//        System.out.println();
-//        System.out.println(discoveryClient.getServices()); // подтягивает с докер переменных 'stats-server'. одинарные кавычки мешают
+        // подтягивает с докер переменных 'stats-server'. одинарные кавычки мешают
         // с проперти все корректно
         ServiceInstance instance = getRetryTemplate().execute(cxt -> getInstance("stats-server"));
         return URI.create("http://" + instance.getHost() + ":" + instance.getPort());

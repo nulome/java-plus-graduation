@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.dto.compilation.CompilationDto;
 import ru.dto.compilation.NewCompilationDto;
 import ru.dto.compilation.UpdateCompilationRequest;
@@ -29,6 +30,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventRepository eventRepository;
 
     @Override
+    @Transactional
     public CompilationDto changeCompilation(NewCompilationDto compilationDto) {
         Set<Event> events = compilationDto.getEvents() != null ?
                 checkEventInDB(compilationDto.getEvents()) : new HashSet<>();
@@ -40,12 +42,14 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional
     public void deleteCompilation(Long compId) {
         checkCompilationInDB(compId);
         compilationRepository.deleteById(compId);
     }
 
     @Override
+    @Transactional
     public CompilationDto patchCompilation(Long compId, UpdateCompilationRequest compilationDto) {
         Compilation compilation = checkCompilationInDB(compId);
         patchCompilationToDto(compilation, compilationDto);
@@ -55,6 +59,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
         List<Compilation> compilations =
                 compilationRepository.findAllByPinned(pinned, PageRequest.of(from, size)).getContent();
@@ -65,6 +70,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompilationDto getCompilationsById(Long compId) {
         Compilation compilation = checkCompilationInDB(compId);
 

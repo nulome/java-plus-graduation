@@ -27,8 +27,8 @@ public class PublicCategoriesController {
     @GetMapping
     @Operation(summary = "получение категорий")
     public List<CategoryDto> getCategories(
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получение категорий from = {}, size = {}", from, size);
         return service.getCategories(from, size);
     }

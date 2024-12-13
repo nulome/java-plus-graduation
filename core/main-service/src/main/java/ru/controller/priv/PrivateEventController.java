@@ -40,8 +40,8 @@ public class PrivateEventController {
     @Operation(summary = "Получение событий пользователем")
     public List<EventShortDto> getEventsForUser(
             @PathVariable Long userId,
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size) {
         log.info("Get events userId = {}, from = {}, size = {}", userId, from, size);
         return eventService.getEventsForUser(userId, from, size);
     }

@@ -31,13 +31,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleThrowable(final Throwable e) {
-        log.error("Error Throwable 500 {}", e.getMessage());
+    public ApiError handleException(final Exception e) {
+        log.error("Error Exception 500 {}", e.getMessage());
         return handleResponseCreate(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
-    private ApiError handleResponseCreate(Throwable e, HttpStatus status) {
+    private ApiError handleResponseCreate(Exception e, HttpStatus status) {
         String classInit = Arrays.stream(e.getStackTrace()).findAny().get().toString();
         String localMessage = e.getLocalizedMessage() + " \n Class: " + classInit;
 
