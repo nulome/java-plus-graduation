@@ -1,0 +1,44 @@
+server:
+  port: ${GATEWAY_SERVICE_PORT}
+
+spring:
+  cloud:
+    gateway:
+      discovery.locator.enabled: true
+      routes:
+
+        - id: main_service_route_admin
+          uri: lb://main-service
+          predicates:
+            - Path=/admin/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+        #            - PrefixPath=
+
+        - id: main_service_route_users
+          uri: lb://main-service
+          predicates:
+            - Path=/users/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: main_service_route_categories
+          uri: lb://main-service
+          predicates:
+            - Path=/categories/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: main_service_route_compilations
+          uri: lb://main-service
+          predicates:
+            - Path=/compilations/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: main_service_route_events
+          uri: lb://main-service
+          predicates:
+            - Path=/events/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker

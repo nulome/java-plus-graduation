@@ -1,14 +1,159 @@
 services:
+  discovery-server:
+    build: infra/discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - ewm-net
+    environment:
+      - EUREKA_PORT=8761
+      - EUREKA_HOST=discovery-server
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health | grep UP || exit 1"
+      timeout: 20s
+      interval: 5s
+      retries: 5
+      start_period: 25s
+
+  config-server:
+    build: infra/config-server
+    container_name: config-server
+    ports:
+      - "9091:9091"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - ewm-net
+    environment:
+      - EUREKA_HOST=discovery-server
+      - EUREKA_PORT=8761
+      - CONFIG_SERVER_PORT=9091
+      - CONFIG_SERVER_HOST=config-server
+    healthcheck:
+      test: "curl --fail --silent localhost:9091/actuator/health | grep UP || exit 1"
+      timeout: 5s
+      interval: 40s
+      retries: 3
+      start_period: 20s
+
+  gateway-server:
+    build: infra/gateway-server
+    container_name: gateway-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      ewm-service:
+        condition: service_healthy
+    networks:
+      - ewm-net
+    environment:
+      - EUREKA_HOST=discovery-server
+      - EUREKA_PORT=8761
+      - GATEWAY_SERVICE_PORT=8080
+      - GATEWAY_SERVER_HOST=gateway-server
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      timeout: 20s
+      interval: 5s
+      retries: 5
+      start_period: 25s
+
   stats-server:
+    build: stats/stats-server
+    container_name: ewm-stats-server
     ports:
       - "9090:9090"
+    depends_on:
+      stats-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - ewm-net
+    environment:
+      - EUREKA_HOST=discovery-server
+      - EUREKA_PORT=8761
+      - APP_PROFILE=dev
+      - STATS_SERVER_PORT=9090
+      - STATS_SERVER_HOST=stats-server
+      - DB_HOST=stats-db
+      - DB_PORT=5432
+      - DB_NAME=ewm-stats
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    healthcheck:
+      test: "curl --fail --silent localhost:9090/actuator/health | grep UP || exit 1"
+      timeout: 20s
+      interval: 5s
+      retries: 5
+      start_period: 25s
 
   stats-db:
     image: postgres:16.1
+    container_name: postgres-ewm-stats-db
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=ewm-stats
+    networks:
+      - ewm-net
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 15
 
   ewm-service:
+    build: core/main-service
+    container_name: ewm-main-service
     ports:
-      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      ewm-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      stats-server:
+        condition: service_healthy
+    networks:
+      - ewm-net
+    environment:
+      - EUREKA_HOST=discovery-server
+      - EUREKA_PORT=8761
+      - APP_PROFILE=dev
+      - DB_HOST=ewm-db
+      - DB_PORT=5432
+      - DB_NAME=ewm
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - MAIN_SERVER_PORT=8081
+      - MAIN_SERVER_HOST=ewm-service
+      - STATS_SERVER_NAME='stats-server'
+    healthcheck:
+      test: "curl --fail --silent localhost:8081/actuator/health | grep UP || exit 1"
+      timeout: 5s
+      interval: 40s
+      retries: 3
+      start_period: 20s
 
   ewm-db:
     image: postgres:16.1
+    container_name: postgres-ewm-main-db
+    networks:
+      - ewm-net
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=ewm
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 15
+
+networks:
+  ewm-net:

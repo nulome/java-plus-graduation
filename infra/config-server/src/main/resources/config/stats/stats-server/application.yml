@@ -1,0 +1,24 @@
+server:
+  port: ${STATS_SERVER_PORT}
+
+
+spring:
+  profiles.active: ${APP_PROFILE:dev}
+  jpa:
+    hibernate.ddl-auto: validate
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQL10Dialect
+      format_sql: true
+  sql.init.mode: always
+
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa: INFO
+          jpa.JpaTransactionManager: DEBUG
+          transaction: INFO
+          transaction.interceptor: TRACE
+

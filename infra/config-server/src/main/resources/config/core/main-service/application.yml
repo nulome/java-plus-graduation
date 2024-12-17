@@ -1,0 +1,30 @@
+server:
+  port: ${MAIN_SERVER_PORT}
+
+spring:
+  profiles.active: ${APP_PROFILE}
+  jpa:
+    hibernate-ddl-auto: validate
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      format_sql: true
+  sql.init.mode: always
+
+logging:
+  level:
+    httpclient:
+      wire: DEBUG
+    org:
+      springframework:
+        orm:
+          jpa: INFO
+          jpa.JpaTransactionManager: DEBUG
+          transaction: INFO
+          transaction.interceptor: TRACE
+
+#ewm-server:
+#  url: ${EVM_SERVER_URL}
+stats-server:
+  name: ${STATS_SERVER_NAME} # коннект к контроллеру stats-server
+
