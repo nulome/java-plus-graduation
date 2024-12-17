@@ -1,0 +1,3 @@
+stats-server:
+  name: ${STATS_SERVER_NAME} # коннект к контроллеру stats-server
+
