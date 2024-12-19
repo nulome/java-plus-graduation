@@ -1,6 +1,7 @@
 package ru.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,17 @@ public class EventServiceImpl implements EventService {
     private final UserRequestsClient userRequestsClient;
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+
+    @PostConstruct
+    void init() {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        statsClient.getStats(
+                localDateTime.format(dateTimeFormatter),
+                localDateTime.format(dateTimeFormatter),
+                List.of("events/" + 0),
+                false);
+    }
 
     @Override
     @Transactional(readOnly = true)

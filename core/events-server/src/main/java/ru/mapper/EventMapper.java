@@ -27,16 +27,21 @@ public abstract class EventMapper {
     @Mapping(target = "id", expression = "java(event.getId())")
     @Mapping(target = "category", source = "categoryDto")
     @Mapping(target = "initiator", source = "userDto")
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "views", ignore = true)
     public abstract EventFullDto toEventFullDto(Event event, UserDto userDto, CategoryDto categoryDto);
 
     @Mapping(target = "id", expression = "java(event.getId())")
     @Mapping(target = "category", source = "categoryDto")
     @Mapping(target = "initiator", source = "userDto")
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "views", ignore = true)
     public abstract EventShortDto toEventShortDto(Event event, UserDto userDto, CategoryDto categoryDto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdOn", expression = "java(setCreatedOnNow())")
     @Mapping(target = "state", expression = "java(setCreateState())")
+    @Mapping(target = "publishedOn", ignore = true)
     public abstract Event toEvent(NewEventDto newEventDto, Long initiator);
 
     public abstract Location toLocation(LocationDto locationDto);
@@ -46,6 +51,10 @@ public abstract class EventMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "state", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "publishedOn", ignore = true)
     public abstract void updateEventFromEventDto(@MappingTarget Event event, UpdateUserEventRequest updateDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -53,6 +62,10 @@ public abstract class EventMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "state", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "publishedOn", ignore = true)
     public abstract void updEventForAdminEventDto(@MappingTarget Event event, UpdateEventAdminRequest updateDto);
 
 

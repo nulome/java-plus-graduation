@@ -8,7 +8,7 @@ import ru.dto.category.CategoryDto;
 import java.util.Optional;
 
 
-@FeignClient(name = "categories-server")
+@FeignClient(name = "categories-server", fallback = CategoryClientFallback.class)
 public interface CategoryClient {
 
     @GetMapping("/feign/categories/{catId}")

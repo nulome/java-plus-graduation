@@ -8,7 +8,7 @@ import ru.dto.user.UserFollowingDto;
 
 import java.util.Optional;
 
-@FeignClient(name = "user-service")
+@FeignClient(name = "user-service", fallback = UserClientFallback.class)
 public interface UserClient {
 
     @GetMapping("/feign/users/{userId}")

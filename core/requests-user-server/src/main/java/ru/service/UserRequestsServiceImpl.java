@@ -19,6 +19,8 @@ import ru.repository.UserRequestRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -87,11 +89,21 @@ public class UserRequestsServiceImpl implements UserRequestsService {
 
     private EventRequestStatusUpdateResult verificationUserRequestAndUpdate(Long eventId, List<UserRequest> listRequest, RequestStatus status) {
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult(new ArrayList<>(), new ArrayList<>());
+        Set<Long> setIds = listRequest.stream()
+                .mapToLong(UserRequest::getEvent)
+                .boxed()
+                .collect(Collectors.toSet());
+
+        List<Map<Long, Long>> rawMapByIds = requestRepository.findRawMapByIds(RequestStatus.CONFIRMED.toString(), setIds);
+        Map<Long, Long> mapCountByEvent = rawMapByIds.stream()
+                .flatMap((m) -> m.entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
         for (UserRequest request : listRequest) {
             if (request.getStatus() != RequestStatus.PENDING) {
                 throw new ConflictException("Статус можно изменить только у заявок, находящихся в состоянии ожидания");
             }
-            long countRequest = requestRepository.countByStatusAndEvent(RequestStatus.CONFIRMED, eventId);
+            long countRequest = mapCountByEvent.getOrDefault(request.getEvent(), 0L);
 
             EventFullDto event = checkEventInDB(request.getEvent());
             if (countRequest >= event.getParticipantLimit()) {

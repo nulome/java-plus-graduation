@@ -23,7 +23,7 @@ public abstract class UserMapper {
     public abstract User toUser(NewUserRequest newUserRequest);
 
     @Named("setUserIdsFollowing")
-    Set<Long> setUserIdsFollowing(User user) {
+    protected Set<Long> setUserIdsFollowing(User user) {
         return user.getFollowing().stream()
                 .map(User::getId)
                 .collect(Collectors.toSet());

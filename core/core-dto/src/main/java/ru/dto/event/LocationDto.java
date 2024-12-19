@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 
 @Data
 public class LocationDto {
-    private Long id;
     private BigDecimal lat;
     private BigDecimal lon;
 }

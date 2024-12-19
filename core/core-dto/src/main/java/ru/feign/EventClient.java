@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 
-@FeignClient(name = "events-server")
+@FeignClient(name = "events-server", fallback = EventClientFallback.class)
 public interface EventClient {
 
     @GetMapping("/feign/events/{eventId}")

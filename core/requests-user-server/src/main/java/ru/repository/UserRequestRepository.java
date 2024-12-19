@@ -7,11 +7,20 @@ import ru.model.UserRequest;
 import ru.related.RequestStatus;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface UserRequestRepository extends JpaRepository<UserRequest, Long> {
 
     Long countByStatusAndEvent(RequestStatus status, Long id);
+
+    @Query(value = """
+            SELECT event_id, count(*)
+            FROM user_request
+            WHERE status = ?1 AND event_id IN (?2)
+            GROUP BY event_id;
+            """, nativeQuery = true)
+    List<Map<Long, Long>> findRawMapByIds(String status, Set<Long> ids);
 
     List<UserRequest> findAllByRequester(Long id);
 

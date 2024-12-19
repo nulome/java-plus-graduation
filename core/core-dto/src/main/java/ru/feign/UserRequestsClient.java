@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.related.RequestStatus;
 
-@FeignClient(name = "requests-user-server")
+@FeignClient(name = "requests-user-server", fallback = UserRequestsClientFallback.class)
 public interface UserRequestsClient {
 
     @GetMapping("/feign/requests/count")

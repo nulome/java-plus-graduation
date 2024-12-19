@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.exception.ConflictException;
+import ru.exception.FeignException;
 import ru.exception.IncorrectDateException;
 import ru.exception.NotFoundException;
 
@@ -48,6 +49,12 @@ public class ErrorHandler {
         return handleResponseCreate(e, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+    public ApiError handleFeignException(final FeignException e) {
+        log.error("Error 418 {}", e.getMessage());
+        return handleResponseCreate(e, HttpStatus.I_AM_A_TEAPOT);
+    }
 
     @ExceptionHandler({IncorrectDateException.class, ConflictException.class, DataIntegrityViolationException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
