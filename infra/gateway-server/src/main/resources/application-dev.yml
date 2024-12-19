@@ -1,0 +1,95 @@
+spring:
+  cloud:
+    gateway:
+      discovery.locator.enabled: true
+      routes:
+
+
+        #         compilations-server
+        - id: compilations_server_route_public
+          uri: lb://compilations-server
+          predicates:
+            - Path=/compilations/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: compilations_server_route_admin
+          uri: lb://compilations-server
+          predicates:
+            - Path=/admin/compilations/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+
+        #          categories-server
+        - id: categories_server_route_public
+          uri: lb://categories-server
+          predicates:
+            - Path=/categories/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: categories_server_route_admin
+          uri: lb://categories-server
+          predicates:
+            - Path=/admin/categories/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+
+        #         requests-user-server
+        - id: main_service_route_admin
+          uri: lb://requests-user-server
+          predicates:
+            - Path=/users/{userId}/requests/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: main_service_route_admin
+          uri: lb://requests-user-server
+          predicates:
+            - Path=/users/{userId}/events/{eventId}/requests
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+
+        #          events-server
+        - id: events_server_route_public
+          uri: lb://events-server
+          predicates:
+            - Path=/events/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: events_server_route_admin
+          uri: lb://events-server
+          predicates:
+            - Path=/admin/events/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+        - id: events_server_route_private
+          uri: lb://events-server
+          predicates:
+            - Path=/users/{userId}/events/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+
+        #        user-service
+        - id: user_service_route_admin
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/users/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+        #            - PrefixPath=
+
+        - id: user_service_route_private
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+          filters:
+            - CircuitBreaker=myCircuitBreaker
+
+

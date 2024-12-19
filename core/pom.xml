@@ -13,7 +13,12 @@
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>main-service</module>
+        <module>user-service</module>
+        <module>core-dto</module>
+        <module>compilations-server</module>
+        <module>categories-server</module>
+        <module>events-server</module>
+        <module>requests-user-server</module>
     </modules>
 
 </project>
