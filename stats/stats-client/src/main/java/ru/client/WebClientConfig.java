@@ -7,6 +7,8 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.MaxAttemptsRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -31,13 +33,19 @@ public class WebClientConfig {
     public RestClient restClient() {
         return RestClient.builder()
                 .baseUrl(String.valueOf(makeUri(nameService)))
+                .requestFactory(getClientHttpRequestFactory())
                 .build();
     }
 
+    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        clientHttpRequestFactory.setConnectTimeout(20000);
+        clientHttpRequestFactory.setConnectionRequestTimeout(18000);
+        return clientHttpRequestFactory;
+    }
+
     private URI makeUri(String nameService) {
-        // подтягивает с докер переменных 'stats-server'. одинарные кавычки мешают
-        // с проперти все корректно
-        ServiceInstance instance = getRetryTemplate().execute(cxt -> getInstance("stats-server"));
+        ServiceInstance instance = getRetryTemplate().execute(cxt -> getInstance(nameService));
         return URI.create("http://" + instance.getHost() + ":" + instance.getPort());
     }
 

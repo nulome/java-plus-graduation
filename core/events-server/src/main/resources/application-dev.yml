@@ -1,0 +1,13 @@
+stats-server:
+  name: ${STATS_SERVER_NAME} # коннект к контроллеру stats-server
+
+resilience4j.circuitbreaker:
+  instances:
+    events-server:
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000 # 10 секунд в миллисекундах
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: COUNT_BASED
+      minimumNumberOfCalls: 5
+      automaticTransitionFromOpenToHalfOpenEnabled: true
